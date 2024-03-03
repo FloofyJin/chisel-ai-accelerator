@@ -73,7 +73,7 @@ class SystolicArrayModel(p: SystolicArrayParams) {
     private val peGrid: ArrayBuffer[ArrayBuffer[ProcessingElementModel]] =
       ArrayBuffer.fill(p.rows, p.cols)(new ProcessingElementModel(p.peOperation))
 
-    val resultGrid: ArrayBuffer[ArrayBuffer[Int]] = ArrayBuffer.fill(p.rows, p.cols)(0)
+    private val resultGrid: ArrayBuffer[ArrayBuffer[Int]] = ArrayBuffer.fill(p.rows, p.cols)(0)
     val rowGrid: ArrayBuffer[ArrayBuffer[Int]] = ArrayBuffer.fill(p.rows, p.cols)(0)
     val columnGrid: ArrayBuffer[ArrayBuffer[Int]] = ArrayBuffer.fill(p.rows, p.cols)(0)
 
@@ -123,7 +123,7 @@ class SystolicArrayModel(p: SystolicArrayParams) {
         // Perform the operation
         for (i <- 0 until p.rows) {
             for (j <- 0 until p.cols) {
-                peGrid(i)(j).execute(rowGrid(i)(j), columnGrid(i)(j));
+                resultGrid(i)(j) = peGrid(i)(j).execute(rowGrid(i)(j), columnGrid(i)(j));
             }
         }
     }
@@ -140,6 +140,10 @@ class SystolicArrayModel(p: SystolicArrayParams) {
         println("Systolic Array State:")
         peGrid.foreach(row => println(row.map(_.getValue).mkString(" ")))
     }
+
+    def returnResult(): ArrayBuffer[ArrayBuffer[Int]] = {
+        resultGrid
+    }
 }
 
 object SystolicArrayModel {
@@ -149,7 +153,7 @@ object SystolicArrayModel {
 object SystolicArrayMatrixMult extends App {
     type Matrix = ArrayBuffer[ArrayBuffer[Int]]
 
-    def apply(n: Int, inputA: Matrix, inputB: Matrix) = {
+    def apply(n: Int, inputA: Matrix, inputB: Matrix): Matrix = {
         val params = new SystolicArrayParams(n, n, (a: Int, b: Int) => a * b)
 
         val systolicArrayModel = SystolicArrayModel(params)
@@ -158,5 +162,6 @@ object SystolicArrayMatrixMult extends App {
             systolicArrayModel.performOperation(i, inputA, inputB)
         }
         systolicArrayModel.displayGrid()
+        systolicArrayModel.returnResult()
     }
 }
