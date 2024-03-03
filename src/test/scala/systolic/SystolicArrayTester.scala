@@ -7,6 +7,7 @@ import org.scalatest.flatspec.AnyFlatSpec
 import systolic.SystolicArrayMatrixMult.Matrix
 
 import scala.collection.mutable.ArrayBuffer
+import scala.collection.mutable
 
 
 object MatMulTestData {
@@ -25,17 +26,19 @@ object MatMulTestData {
 
   val out2x2 = Seq(Seq(50, 60),
                    Seq(114,140))
-  val out4x4 = Seq(Seq(11, 14, 17, 20),
-                   Seq(23, 30, 37, 44),
-                   Seq(35, 46, 57, 68),
-                   Seq(47, 62, 77, 92))
+  val testa = ArrayBuffer(ArrayBuffer(1, 2, 3),
+                          ArrayBuffer(4, 5, 6),
+                          ArrayBuffer(7, 8, 9))
+  val testb = ArrayBuffer(ArrayBuffer(1, 4, 7),
+                          ArrayBuffer(2, 5, 8),
+                          ArrayBuffer(3, 6, 9))
 }
 
 class SystolicMulModelTester extends AnyFlatSpec with ChiselScalatestTester {
   behavior of "Test cases of scala "
   it should "array" in {
-    val identity4x4 = MatMulTestData.genIdentity(4)
-    SystolicArrayMatrixMult(4, identity4x4, identity4x4)
+    // val identity4x4 = MatMulTestData.genIdentity(4)
+    SystolicArrayMatrixMult(3, MatMulTestData.testb, MatMulTestData.testa)
     true
   }
 }

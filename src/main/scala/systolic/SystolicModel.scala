@@ -117,7 +117,9 @@ class SystolicArrayModel(p: SystolicArrayParams) {
             }
         }
         
-        // columnGrid.foreach(row => println(row.map(i=>i).mkString(" ")))
+        rowGrid.foreach(row => println(row.map(i=>i).mkString(" ")))//inputA
+        columnGrid.foreach(row => println(row.map(i=>i).mkString(" ")))//inputB
+        println()
 
         // Perform the operation
         for (i <- 0 until p.rows) {
@@ -175,9 +177,8 @@ object SystolicArrayMatrixMult extends App {
         // }
         // systolicArrayModel.performOperation(inputA, inputB)
         // systolicArrayModel.displayGrid()
-        for (i <- 0 until n*2) {
+        for (i <- 0 until n*2+1) {
             systolicArrayModel.performOperation(i, inputA, inputB)
-            println()
         }
         systolicArrayModel.displayGrid()
     }
