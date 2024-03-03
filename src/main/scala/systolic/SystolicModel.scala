@@ -89,18 +89,17 @@ class SystolicArrayModel(p: SystolicArrayParams) {
     def performOperation(i: Int, inputA: ArrayBuffer[ArrayBuffer[Int]], inputB: ArrayBuffer[ArrayBuffer[Int]])= {
         require(inputA.length == p.rows && inputB.length == p.cols, "Input dimensions must match the systolic array dimensions.")
 
-        // shift value right or below
+        // shift value right or down
         for (i <- p.rows-1 to 0 by -1) {
             for (j <- p.cols -1 to 0 by -1) {
-                if(j < p.cols-1){
+                if(j < p.cols-1){//shift right
                     rowGrid(i)(j+1) = rowGrid(i)(j)
                 }
-                if(i < p.rows-1){
+                if(i < p.rows-1){//shift down
                     columnGrid(i+1)(j) = columnGrid(i)(j)
                 }
             }
         }
-        // print(i);
         // add value to beginning of row or column
         for(r <- 0 until p.rows){
             if(i >= r && i < p.cols+r){
@@ -117,17 +116,14 @@ class SystolicArrayModel(p: SystolicArrayParams) {
             }
         }
         
-        rowGrid.foreach(row => println(row.map(i=>i).mkString(" ")))//inputA
-        columnGrid.foreach(row => println(row.map(i=>i).mkString(" ")))//inputB
-        println()
+        // rowGrid.foreach(row => println(row.map(i=>i).mkString(" ")))//inputA
+        // columnGrid.foreach(row => println(row.map(i=>i).mkString(" ")))//inputB
+        // println()
 
         // Perform the operation
         for (i <- 0 until p.rows) {
             for (j <- 0 until p.cols) {
-                // val res = peGrid(i)(j).execute(rowGrid(i)(j), columnGrid(i)(j));
-                // println(res);
-                resultGrid(i)(j) = resultGrid(i)(j) + peGrid(i)(j).execute(rowGrid(i)(j), columnGrid(i)(j));
-                // resultGrid(i)(j) = 1;
+                peGrid(i)(j).execute(rowGrid(i)(j), columnGrid(i)(j));
             }
         }
     }
@@ -150,18 +146,6 @@ object SystolicArrayModel {
     def apply(params: SystolicArrayParams): SystolicArrayModel = new SystolicArrayModel(params)
 }
 
-// Example usage
-// object SystolicArrayModelExample extends App {
-//     private val params = new SystolicArrayParams(4, 4, (a: Int, b: Int) => a * b)
-
-//     private val systolicArrayModel = SystolicArrayModel(params)
-//     private val inputA = ArrayBuffer(1, 2, 3, 4) // Example input for rows
-//     private val inputB = ArrayBuffer(1, 2, 3, 4) // Example input for columns
-
-//     systolicArrayModel.performOperation(inputA, inputB)
-//     systolicArrayModel.displayGrid()
-// }
-
 object SystolicArrayMatrixMult extends App {
     type Matrix = ArrayBuffer[ArrayBuffer[Int]]
 
@@ -169,32 +153,10 @@ object SystolicArrayMatrixMult extends App {
         val params = new SystolicArrayParams(n, n, (a: Int, b: Int) => a * b)
 
         val systolicArrayModel = SystolicArrayModel(params)
-        // for (row <- inputA) {
-        //     for (item <- row) {
-        //         print(item)
-        //     }
-        //     println()
-        // }
-        // systolicArrayModel.performOperation(inputA, inputB)
-        // systolicArrayModel.displayGrid()
+
         for (i <- 0 until n*2+1) {
             systolicArrayModel.performOperation(i, inputA, inputB)
         }
         systolicArrayModel.displayGrid()
     }
 }
-
-// object SystolicArrayModelExample extends App {
-
-//     def apply() = {
-
-//         val params = new SystolicArrayParams(4, 4, (a: Int, b: Int) => a * b)
-        
-//         val systolicArrayModel = SystolicArrayModel(params)
-//         val inputA = ArrayBuffer(1, 2, 3, 4) // Example input for rows
-//         val inputB = ArrayBuffer(1, 2, 3, 4) // Example input for columns
-        
-//         systolicArrayModel.performOperation(inputA, inputB)
-//         systolicArrayModel.displayGrid()
-//     }
-// }

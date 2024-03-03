@@ -36,9 +36,13 @@ object MatMulTestData {
 
 class SystolicMulModelTester extends AnyFlatSpec with ChiselScalatestTester {
   behavior of "Test cases of scala "
-  it should "array" in {
-    // val identity4x4 = MatMulTestData.genIdentity(4)
+  it should "counting" in {
     SystolicArrayMatrixMult(3, MatMulTestData.testb, MatMulTestData.testa)
+    true
+  }
+  it should "identity" in {
+    val identity4x4 = MatMulTestData.genIdentity(4)
+    SystolicArrayMatrixMult(4, identity4x4, identity4x4)
     true
   }
 }
