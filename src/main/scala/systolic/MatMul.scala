@@ -6,9 +6,9 @@ import chisel3.util._
 
 import scala.collection.mutable.ArrayBuffer
 
-object Calc extends ChiselEnum {
-  val idle, multiplying, finished= Value
-}
+// object Calc extends ChiselEnum {
+//   val idle, multiplying, finished= Value
+// }
 
 class MatMulSystolic(params: SystolicArrayParams) extends Module {
   val io = IO(new Bundle {
@@ -26,38 +26,38 @@ class MatMulSystolic(params: SystolicArrayParams) extends Module {
   val peGrid: ArrayBuffer[ArrayBuffer[ProcessingElementModel]] =
       ArrayBuffer.fill(params.rows, params.cols)(new ProcessingElementModel(params.peOperation))
 
-  val state = RegInit(Calc.idle)
+  // val state = RegInit(Calc.idle)
   val ovalid = RegInit(false.B)
   val iready = RegInit(true.B)
 
   // val Counter = Counter(params.rows*2+1)
 
-  switch(state){
-    is(Calc.idle){
-      iready := true.B
-      ovalid := false.B
-      when(io.in.fire){
-        state := Calc.multiplying
-      }
-    }
-    is(Calc.multiplying){
-      iready := false.B
-      ovalid := false.B
-      res(0.U)(0.U) := 1.S
-      printf("Multiplying\n")
-    }
-    is(Calc.finished){
-      printf("Finished\n")
-      ovalid := true.B
-      iready := false.B
-    }
-  }
+  // switch(state){
+  //   is(Calc.idle){
+  //     iready := true.B
+  //     ovalid := false.B
+  //     when(io.in.fire){
+  //       state := Calc.multiplying
+  //     }
+  //   }
+  //   is(Calc.multiplying){
+  //     iready := false.B
+  //     ovalid := false.B
+  //     res(0.U)(0.U) := 1.S
+  //     printf("Multiplying\n")
+  //   }
+  //   is(Calc.finished){
+  //     printf("Finished\n")
+  //     ovalid := true.B
+  //     iready := false.B
+  //   }
+  // }
 
-  io.in.ready := iready
-  io.out.valid := ovalid
-  io.out.bits := res
+  // io.in.ready := iready
+  // io.out.valid := ovalid
+  // io.out.bits := res
 
-  def perform() = {
+  // def perform() = {
     // for(i <- params.rows -1 to 0 by -1){
     //   for(j <- params.cols -1 to 0 by -1){
     //     when(j < params.cols -1){
@@ -68,6 +68,6 @@ class MatMulSystolic(params: SystolicArrayParams) extends Module {
     //     }
     //   }
     // }
-  }
+  // }
   
 }
