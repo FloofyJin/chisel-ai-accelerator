@@ -1,34 +1,34 @@
 package systolic
 
-import chisel3._
-import chisel3.util.log2Ceil
-import chisel3.util._ 
+// import chisel3._
+// import chisel3.util.log2Ceil
+// import chisel3.util._ 
 
-import scala.collection.mutable.ArrayBuffer
+// import scala.collection.mutable.ArrayBuffer
 
 // object Calc extends ChiselEnum {
 //   val idle, multiplying, finished= Value
 // }
 
-class MatMulSystolic(params: SystolicArrayParams) extends Module {
-  val io = IO(new Bundle {
-    val in = Flipped(Decoupled(new Bundle {
-      val a = Vec(params.rows, Vec(params.cols, SInt(32.W)))
-      val b = Vec(params.rows, Vec(params.cols, SInt(32.W)))
-    }))
-    val out = Valid(Vec(params.rows, Vec(params.cols, SInt(32.W))))
-  })
+// class MatMulSystolic(params: SystolicArrayParams) extends Module {
+//   val io = IO(new Bundle {
+//     val in = Flipped(Decoupled(new Bundle {
+//       val a = Vec(params.rows, Vec(params.cols, SInt(32.W)))
+//       val b = Vec(params.rows, Vec(params.cols, SInt(32.W)))
+//     }))
+//     val out = Valid(Vec(params.rows, Vec(params.cols, SInt(32.W))))
+//   })
 
-  val rowGrid = Reg(Vec(params.rows, Vec(params.cols, SInt(32.W))))
-  val colGrid = Reg(Vec(params.rows, Vec(params.cols, SInt(32.W))))
-  val res = RegInit(VecInit(Seq.fill(params.rows)(VecInit(Seq.fill(params.cols)(0.S(32.W))))))
+//   val rowGrid = Reg(Vec(params.rows, Vec(params.cols, SInt(32.W))))
+//   val colGrid = Reg(Vec(params.rows, Vec(params.cols, SInt(32.W))))
+//   val res = RegInit(VecInit(Seq.fill(params.rows)(VecInit(Seq.fill(params.cols)(0.S(32.W))))))
 
-  val peGrid: ArrayBuffer[ArrayBuffer[ProcessingElementModel]] =
-      ArrayBuffer.fill(params.rows, params.cols)(new ProcessingElementModel(params.peOperation))
+//   val peGrid: ArrayBuffer[ArrayBuffer[ProcessingElementModel]] =
+//       ArrayBuffer.fill(params.rows, params.cols)(new ProcessingElementModel(params.peOperation))
 
-  // val state = RegInit(Calc.idle)
-  val ovalid = RegInit(false.B)
-  val iready = RegInit(true.B)
+//   // val state = RegInit(Calc.idle)
+//   val ovalid = RegInit(false.B)
+//   val iready = RegInit(true.B)
 
   // val Counter = Counter(params.rows*2+1)
 
@@ -70,4 +70,4 @@ class MatMulSystolic(params: SystolicArrayParams) extends Module {
     // }
   // }
   
-}
+// }
