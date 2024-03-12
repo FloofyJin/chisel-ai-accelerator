@@ -32,6 +32,7 @@ If we have enough time, we would like to explore more domain specific DNN accele
 
 ### Work In Progress 🚧
 - Translation of systolic array model in chisel
+- delve into processing units with unique operations
 
 ## JDK 8 or newer
 
