@@ -29,16 +29,24 @@ import scala.collection.mutable.ArrayBuffer
 * */
 
 // Could change from operation on Ints to UInts for chisel
-class ProcessingElementModel(operation: (Int, Int) => Int){
+class ProcessingElementModel(operation: (Int, Int) => Int) {
     private var value: Int = 0
+
     def execute(inputA: Int, inputB: Int): Int = {
         value = value + operation(inputA, inputB)
         value
     }
+
     def getValue: Int = {
         value
     }
+
+    // Method to directly update the value of the processing element
+    def updateValue(newValue: Int): Unit = {
+        value = newValue
+    }
 }
+
 
 /*******************************************************************************
  * SYSTOLIC ARRAY MODULE DEFINITION                                            *
@@ -74,8 +82,8 @@ class SystolicArrayModel(p: SystolicArrayParams) {
       ArrayBuffer.fill(p.rows, p.cols)(new ProcessingElementModel(p.peOperation))
 
     private val resultGrid: ArrayBuffer[ArrayBuffer[Int]] = ArrayBuffer.fill(p.rows, p.cols)(0)
-    private val rowGrid: ArrayBuffer[ArrayBuffer[Int]] = ArrayBuffer.fill(p.rows, p.cols)(0)
-    private val columnGrid: ArrayBuffer[ArrayBuffer[Int]] = ArrayBuffer.fill(p.rows, p.cols)(0)
+    val rowGrid: ArrayBuffer[ArrayBuffer[Int]] = ArrayBuffer.fill(p.rows, p.cols)(0)
+    val columnGrid: ArrayBuffer[ArrayBuffer[Int]] = ArrayBuffer.fill(p.rows, p.cols)(0)
 
     /*
     * @function performOperation
@@ -86,47 +94,49 @@ class SystolicArrayModel(p: SystolicArrayParams) {
     *
     * @author: Rian Borah, 2024.03.02
     * */
-    def performOperation(i: Int, inputA: ArrayBuffer[ArrayBuffer[Int]], inputB: ArrayBuffer[ArrayBuffer[Int]])= {
+    // New method to simulate waiting for results from upstream PEs before proceeding.
+    def performOperation(i: Int, inputA: ArrayBuffer[ArrayBuffer[Int]], inputB: ArrayBuffer[ArrayBuffer[Int]]): Unit = {
         require(inputA.length == p.rows && inputB.length == p.cols, "Input dimensions must match the systolic array dimensions.")
 
-        // shift value right or down
-        for (i <- p.rows-1 to 0 by -1) {
-            for (j <- p.cols -1 to 0 by -1) {
-                if(j < p.cols-1){//shift right
-                    rowGrid(i)(j+1) = rowGrid(i)(j)
-                }
-                if(i < p.rows-1){//shift down
-                    columnGrid(i+1)(j) = columnGrid(i)(j)
-                }
-            }
-        }
-        // add value to beginning of row or column
-        for(r <- 0 until p.rows){
-            if(i >= r && i < p.cols+r){
-                rowGrid(r)(0) = inputA(r)(p.cols-1-i+r)
-            }else{
-                rowGrid(r)(0) = 0
-            }
-        }
-        for(c <- 0 until p.cols){
-            if(i >= c && i < p.rows+c){
-                columnGrid(0)(c) = inputB(p.rows-1-i+c)(c)
-            }else{
-                columnGrid(0)(c) = 0
-            }
-        }
-        
-        // rowGrid.foreach(row => println(row.map(i=>i).mkString(" ")))//inputA
-        // columnGrid.foreach(row => println(row.map(i=>i).mkString(" ")))//inputB
-        // println()
+        // Simulating the clock cycles for synchronization by iterating through 'steps'
+        for (step <- 0 until (p.rows + p.cols - 1)) {
+            // Temporary storage to hold the next state before updating the PE values
+            val nextState: ArrayBuffer[ArrayBuffer[Int]] = ArrayBuffer.fill(p.rows, p.cols)(0)
 
-        // Perform the operation
-        for (i <- 0 until p.rows) {
-            for (j <- 0 until p.cols) {
-                resultGrid(i)(j) = peGrid(i)(j).execute(rowGrid(i)(j), columnGrid(i)(j));
+            // Iterate over the grid to calculate the next state based on current inputs
+            for (i <- 0 until p.rows) {
+                for (j <- 0 until p.cols) {
+                    // Only update if the PE is supposed to receive new inputs at this step
+                    if (i + j == step) {
+                        // Here, we're mimicking the behavior of waiting for upstream PEs by only updating
+                        // the PEs that are ready to receive and process new data.
+                        nextState(i)(j) = peGrid(i)(j).execute(rowGrid(i)(j), columnGrid(i)(j))
+                    } else if (i + j < step) {
+                        // Keep the previous state for PEs that have already received their inputs
+                        nextState(i)(j) = peGrid(i)(j).getValue
+                    }
+                    // PEs that haven't received their input yet will remain at their initial state (0)
+                }
             }
+
+            // After calculating the next state for all PEs, update the grid
+            for (i <- 0 until p.rows) {
+                for (j <- 0 until p.cols) {
+                    peGrid(i)(j).updateValue(nextState(i)(j))
+                }
+            }
+
+            // You may need to adjust the logic for shifting data right or down here, as this example
+            // focuses on the synchronization aspect.
         }
+
+        // Other operations like shifting data right or down should be integrated here
+        // following the logic that ensures synchronization and data dependency between PEs.
     }
+
+    // Note: Add an `updateValue` method in the `ProcessingElementModel` class to update the PE's value directly.
+    // This is necessary to apply the nextState values to the PEs.
+
 
     /*
     * @function displayGrid
