@@ -20,7 +20,6 @@ object MatMulTestData {
     return a
   }
 
-  // Generates a matrix of size n x n filled with random integers
   def genRandomMatrix(n: Int, minValue: Int = -10, maxValue: Int = 10): Matrix = {
     ArrayBuffer.fill(n, n)(Random.nextInt(maxValue - minValue + 1) + minValue)
   }
@@ -28,6 +27,7 @@ object MatMulTestData {
   def genZeroMatrix(n: Int, minValue: Int = -10, maxValue: Int = 10): Matrix = {
     ArrayBuffer.fill(n, n)(0)
   }
+
 
   def genOnesRow(n: Int): Matrix = ArrayBuffer(ArrayBuffer.fill(n)(1))
 
@@ -44,15 +44,20 @@ object MatMulTestData {
                           ArrayBuffer(90, 108, 126))
 }
 
-class SystolicMulModelTester extends AnyFlatSpec {
-  // Test identity matrix multiplication
-  "An identity matrix" should "not change the multiplied matrix" in {
-    for (n <- 2 to 6) { // Testing with different sizes
-      val identity = MatMulTestData.genIdentity(n)
-      val testMatrix = MatMulTestData.genRandomMatrix(n) // Assuming this generates random nxn matrix
-      assert(SystolicArrayMatrixMult(n, identity, testMatrix) == testMatrix)
-    }
+class SystolicMulModelTester extends AnyFlatSpec with ChiselScalatestTester {
+  behavior of "simple matrix"
+  it should "counting" in {
+    assert(SystolicArrayMatrixMult(3, MatMulTestData.testa, MatMulTestData.testb)==MatMulTestData.testRes)
+    true
   }
+
+  // Test identity matrix multiplication
+  it should "identity" in {
+    val identity4x4 = MatMulTestData.genIdentity(4)
+    assert(SystolicArrayMatrixMult(4, identity4x4, identity4x4)==identity4x4)
+    true
+  }
+
 
   // Test multiplication with a zero matrix
   it should "result in a zero matrix when multiplied by a zero matrix" in {
@@ -71,15 +76,6 @@ class SystolicMulModelTester extends AnyFlatSpec {
     val expected = ArrayBuffer(ArrayBuffer(-19, -22), ArrayBuffer(-43, -50))
     assert(SystolicArrayMatrixMult(2, testMatrixA, testMatrixB) == expected)
   }
-
-//  "Systolic Array Matrix Multiplication" should "correctly multiply random matrices" in {
-//    val n = 4 // Matrix size
-//    val testMatrixA = MatMulTestData.genRandomMatrix(n)
-//    val testMatrixB = MatMulTestData.genRandomMatrix(n)
-//    // Assuming a method to compute the expected result or using a known correct implementation
-//    val expectedMatrix = computeMatrixMultiplication(testMatrixA, testMatrixB)
-//    assert(SystolicArrayMatrixMult(n, testMatrixA, testMatrixB) == expectedMatrix)
-
 }
 
 class SystolicMulTester extends AnyFlatSpec with ChiselScalatestTester {
@@ -102,6 +98,11 @@ class SystolicMulTester extends AnyFlatSpec with ChiselScalatestTester {
       dut.io.in.ready.expect(false.B)
       dut.io.out.valid.expect(false.B)
       dut.clock.step(3*2+2)
+      for(i <- 0 until 3){
+        for(j <- 0 until 3){
+          dut.io.out.bits(i)(j).expect(MatMulTestData.testRes(i)(j).S)
+        }
+      }
     }
     true
   }
