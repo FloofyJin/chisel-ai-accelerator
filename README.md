@@ -1,4 +1,4 @@
-Chisel Project Template
+Chisel Ai Accelerator
 =======================
 
 ## Overview
@@ -42,7 +42,9 @@ We recommend LTS releases Java 8 and Java 11. You can install the JDK as recomme
 
 We recommend sbt
 
-This program was mostly run on sbt. to test run ```sbt test```
+This program was mostly run on sbt. To test run: ```sbt test```
+
+You can also manually change the operant types by updating line 52 in MatMul.scala manually. eg. OpType.Add, OpType.Mul, OpType.And, OpType.Or, OpType.Xor
 
 ## References
 [Chisel Bootcamp](https://github.com/freechipsproject/chisel-bootcamp)
