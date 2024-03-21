@@ -24,15 +24,14 @@ If we have enough time, we would like to explore more domain specific DNN accele
 - Matrix multiplication using systolic array in Scala
   - `SystolicModel.scala`
   - Able to calculate dot multiplication of fixed size n*n
-
+  - Translation of systolic array model in chisel
+  - delve into processing units with unique operations
+  - Testing of Scala functionality and cleaning up code for readability(**Working**)
 
 ### Almost Done 🏗
-- Testing of Scala functionality and cleaning up code for readability(**Working**)
-
 
 ### Work In Progress 🚧
-- Translation of systolic array model in chisel
-- delve into processing units with unique operations
+- Mess with possibility of differently shaped systolic arrays such as triangle which would calculate with 3 converging arrays.
 
 ## JDK 8 or newer
 
